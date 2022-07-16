@@ -1,8 +1,7 @@
 // Create VPC
 module "example" {
   source = "./modules/vpc"
-
-  name = "simple-example"
+  name   = "simple-example"
 
 }
 
