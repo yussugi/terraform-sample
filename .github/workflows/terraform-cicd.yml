@@ -42,13 +42,15 @@
 #       with:
 #         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-name: 'Terraform'
+name: 'Terraform CI/CD'
 
 on:
   push:
     branches:
     - "main"
   pull_request:
+    branches: [main]
+    types: [closed]
 
 permissions:
   contents: read
@@ -73,15 +75,16 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} #アクセスキー
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} #シークレットキー
-        aws-region: ${{ secrets.AWS_REGION }} # region
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} # access key from GitHub settings
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # secret key from GitHub settings
+        aws-region: ${{ secrets.AWS_REGION }} # region from GitHub settings
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
-        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+        # cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+        terraform_version: 1.0.0
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
@@ -89,14 +92,15 @@ jobs:
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
-      run: terraform fmt -check
+      run: terraform fmt -recursive -check
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false
+      run: terraform plan -input=false -no-color
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
-      if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
+    - name: Terraform Apply main branch
+      # if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
+      if: github.event_name.pull_request.merged == true
       run: terraform apply -auto-approve -input=false
