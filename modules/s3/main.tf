@@ -1,7 +1,9 @@
-
 //////////////////
 // S3 resources //
 //////////////////
+variable "name" {
+
+}
 
 resource "aws_s3_bucket" "private" {
   bucket = "private-bucket-20220418-uninosushi"
