@@ -12,3 +12,8 @@ module "example_sg" {
   port        = 80
   cidr_blocks = ["0.0.0.0/0"]
 }
+
+module "example_s3" {
+  source = "./modules/s3"
+  name   = "module-s3"
+}

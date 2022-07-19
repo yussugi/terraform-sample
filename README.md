@@ -25,7 +25,7 @@ Next, setting provider.tf file (AWS profile)
 This project is using variables.tf (aws_profile)
 
 ### Execute the following command
-`terraform init -reconfigure`
+`terraform init -reconfigure` or `terraform init -migrate-state`
 
 
 ### Add module, using the following command
